@@ -43,8 +43,19 @@ class Employee(object):
 
 
 if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("salary", type=int, nargs="*")
+    args = parser.parse_args()
+
+    if not len(args.salary):
+        salaries = [25000, 50000, 75000, 100000]
+    else:
+        salaries = args.salary
+
     print("salary | monthly wage | effective tax rate")
-    for i in [30000, 40000, 50000, 75000, 100000]:
+    for i in salaries:
         e = Employee(i, 0)
         m_income = e.net_monthly_income()
         tax = i/12 - m_income
