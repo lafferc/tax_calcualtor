@@ -17,7 +17,7 @@ class Employee(object):
     def __init__(self, income, contribution, tax_credits=3300):
         self.anual_income = income
         self.pension = contribution * 12
-        self.tax_credits = tax_credits 
+        self.tax_credits = tax_credits
 
     def calc_tax_bill(self):
         self.paye = calc_tax_from_bands(self.anual_income - self.pension, paye_bands)
