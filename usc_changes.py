@@ -57,11 +57,11 @@ usc_bands = {
 
 def calc_weekly_income(year, hours):
     gross = min_wage[year] * hours
-    print year, "gross", gross
     usc = calc_weekly_usc(year, gross)
     tax = calc_weekly_paye(year, gross)
     net = gross - (usc + tax)
-    print year, "Net  ", net
+
+    return year, gross, usc, net
 
 
 def calc_weekly_usc(year, gross):
@@ -74,18 +74,17 @@ def calc_monthly_usc(year, gross):
 
 def calc_usc(period, year, gross):
     if gross < usc_exempt[year] / period:
-        print "exempt from USC"
+        print("exempt from USC")
         return 0
     leftover = gross
     usc = 0
     for band, rate in usc_bands[year]:
         if band is None or leftover < band / period:
             usc += leftover * rate
-            print year, "USC  ", usc
             return usc
         usc += (band / period) * rate
         leftover = leftover - (band / period)
-    print "error in USC bands"
+    raise RuntimeError("error in USC bands")
 
 
 def calc_weekly_paye(year, gross):
@@ -93,6 +92,12 @@ def calc_weekly_paye(year, gross):
 
 
 if __name__ == "__main__":
+    from tabulate import tabulate
+    hours = 39
+    table = []
     for year in range(2016, 2022):
-        calc_weekly_income(year, 39)
+        table.append(calc_weekly_income(year, hours))
+
+    print("Weekly income of a minimum wage worker (working %d hrs per week)" % hours)
+    print(tabulate(table, headers=["year", "Gross", "USC", "Net"]))
 
