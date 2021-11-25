@@ -73,17 +73,17 @@ def calc_monthly_usc(year, gross):
 
 
 def calc_usc(period, year, gross):
-    if gross < usc_exempt[year] / period:
+    if gross < usc_exempt[year] / float(period):
         print("exempt from USC")
         return 0
     leftover = gross
     usc = 0
     for band, rate in usc_bands[year]:
-        if band is None or leftover < band / period:
+        if band is None or leftover < band / float(period):
             usc += leftover * rate
             return usc
-        usc += (band / period) * rate
-        leftover = leftover - (band / period)
+        usc += (band / float(period)) * rate
+        leftover = leftover - (band / float(period))
     raise RuntimeError("error in USC bands")
 
 
@@ -91,8 +91,25 @@ def calc_weekly_paye(year, gross):
     return gross * 0.2
 
 
+def tests():
+    def test_equal(val, expected):
+        assert val == expected, val
+
+    test_equal(calc_weekly_usc(2016, 540), 16.105)
+    test_equal(calc_weekly_usc(2019, 540), 7.335)
+    test_equal(calc_weekly_usc(2019, 350), 3.535)
+    test_equal(calc_monthly_usc(2018, 1250), 9.985)
+    test_equal(calc_weekly_income(2018, 30), (2018, 286.5, 2.265, 226.935))
+    test_equal(calc_usc(1, 2017, 12000), 0)
+    test_equal(calc_usc(1, 2018, 15000), 119.82)
+    test_equal(calc_usc(1, 2018, 45000), 1094.26)
+    test_equal(calc_usc(12, 2018, 1250), 9.985)
+    test_equal(calc_usc(52, 2018, 290), 2.335)
+
+
 if __name__ == "__main__":
     from tabulate import tabulate
+
     hours = 39
     table = []
     for year in range(2016, 2022):
