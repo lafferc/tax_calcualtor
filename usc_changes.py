@@ -1,62 +1,19 @@
-min_wage = {
-        2016: 9.15,
-        2017: 9.25,
-        2018: 9.55,
-        2019: 9.80,
-        2020: 10.10,
-        2021: 10.20,
-        2022: 10.50,
-    }
-usc_exempt = {
-        2016: 13000,
-        2017: 13000,
-        2018: 13000,
-        2019: 13000,
-        2020: 13000,
-        2021: 13000,
-    }
-usc_bands = {
-    2016: [
-        (12012, 0.01),
-        (6656, 0.03),
-        (51376, 0.055),
-        (None, 0.08)
-    ],
-    2017: [
-        (12012, 0.005),
-        (6760, 0.025),
-        (51272, 0.05),
-        (None, 0.08)
-    ],
-    2018: [
-        (12012, 0.005),
-        (19372, 0.02),
-        (70044, 0.0475),
-        (None, 0.08)
-    ],
-    2019: [
-        (12012, 0.005),
-        (19874, 0.02),
-        (70044, 0.045),
-        (None, 0.08)
-    ],
-    2020: [
-        (12012, 0.005),
-        (20484, 0.02),
-        (70044, 0.045),
-        (None, 0.08)
-    ],
-    2021: [
-        (12012, 0.005),
-        (20687, 0.02),
-        (70044, 0.045),
-        (None, 0.08)
-    ],
-}
+import json
+
+g_tax_data = None
+DEFAULT_TAX_FILE = "tax_IE.json"
+
+def load_tax_data(filename):
+    global g_tax_data
+
+    g_tax_data = json.loads(open(filename).read())
+
+    return g_tax_data
 
 
 def calc_weekly_income(year, hours):
-    gross = min_wage[year] * hours
+    min_wage = g_tax_data[str(year)]["min_wage"]
+    gross = min_wage * hours
     usc = calc_weekly_usc(year, gross)
     tax = calc_weekly_paye(year, gross)
     net = gross - (usc + tax)
@@ -73,16 +30,18 @@ def calc_monthly_usc(year, gross):
 
 
 def calc_usc(period, year, gross):
-    if gross < usc_exempt[year] / float(period):
+    usc = g_tax_data[str(year)]["usc"]
+
+    if gross < usc["exempt"] / float(period):
         print("exempt from USC")
         return 0
     leftover = gross
-    usc = 0
-    for band, rate in usc_bands[year]:
+    tax = 0
+    for band, rate in usc["bands"]:
         if band is None or leftover < band / float(period):
-            usc += leftover * rate
-            return usc
-        usc += (band / float(period)) * rate
+            tax += leftover * rate
+            return tax
+        tax += (band / float(period)) * rate
         leftover = leftover - (band / float(period))
     raise RuntimeError("error in USC bands")
 
@@ -94,6 +53,8 @@ def calc_weekly_paye(year, gross):
 def tests():
     def test_equal(val, expected):
         assert val == expected, val
+
+    load_tax_data(DEFAULT_TAX_FILE)
 
     test_equal(calc_weekly_usc(2016, 540), 16.105)
     test_equal(calc_weekly_usc(2019, 540), 7.335)
@@ -110,9 +71,11 @@ def tests():
 if __name__ == "__main__":
     from tabulate import tabulate
 
+    load_tax_data(DEFAULT_TAX_FILE)
+
     hours = 39
     table = []
-    for year in range(2016, 2022):
+    for year in range(2016, 2024):
         table.append(calc_weekly_income(year, hours))
 
     print("Weekly income of a minimum wage worker (working %d hrs per week)" % hours)
