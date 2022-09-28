@@ -44,6 +44,7 @@ class Employee(object):
 
 if __name__ == '__main__':
     import argparse
+    from tabulate import tabulate
 
     parser = argparse.ArgumentParser()
     parser.add_argument("salary", type=int, nargs="*")
@@ -54,11 +55,15 @@ if __name__ == '__main__':
     else:
         salaries = args.salary
 
-    print("salary | monthly wage | effective tax rate")
+    table = []
     for i in salaries:
         e = Employee(i, 0)
         m_income = e.net_monthly_income()
         tax = i/12 - m_income
-        print("%6d |      %6.2f | %.2f%%" % (i, m_income, 100*tax/(i/12)))
+        table.append((i, m_income, 100*tax/(i/12)))
+
+    print(tabulate(table,
+                   headers=["salary", "monthly wage", "effective tax rate"],
+                   floatfmt=("", ".2f", ".2f")))
 
 
