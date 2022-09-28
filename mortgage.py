@@ -16,8 +16,14 @@ def deposit_needed(mortgage, ftb=True):
     return mortgage / (9 if ftb else 4)
 
 
-def max_income_tax_refund(property_value):
-    return min(20000, property_value * 0.05)
+def max_income_tax_refund(property_value, ehtb=True):
+    """
+        income tax refund for HTB or enhanced HTB scheme
+    """
+    if (ehtb)
+        return min(30000, property_value * 0.1)
+    else
+        return min(20000, property_value * 0.05)
 
 
 def calc_income_tax_refund(incomes_per_year, property_value):
