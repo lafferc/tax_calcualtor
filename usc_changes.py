@@ -1,15 +1,8 @@
-import json
+import logging
+
+from utils import load_tax_data, calc_tax_from_bands
 
 g_tax_data = None
-DEFAULT_TAX_FILE = "tax_IE.json"
-
-def load_tax_data(filename):
-    global g_tax_data
-
-    g_tax_data = json.loads(open(filename).read())
-
-    return g_tax_data
-
 
 def calc_weekly_income(year, hours):
     min_wage = g_tax_data[str(year)]["min_wage"]
@@ -32,18 +25,12 @@ def calc_monthly_usc(year, gross):
 def calc_usc(period, year, gross):
     usc = g_tax_data[str(year)]["usc"]
 
-    if gross < usc["exempt"] / float(period):
-        print("exempt from USC")
+    yearly_gross = gross * period
+    if yearly_gross < usc["exempt"]:
+        logging.debug("exempt from USC")
         return 0
-    leftover = gross
-    tax = 0
-    for band, rate in usc["bands"]:
-        if band is None or leftover < band / float(period):
-            tax += leftover * rate
-            return tax
-        tax += (band / float(period)) * rate
-        leftover = leftover - (band / float(period))
-    raise RuntimeError("error in USC bands")
+
+    return calc_tax_from_bands(yearly_gross, usc["bands"]) / period
 
 
 def calc_weekly_paye(year, gross):
@@ -51,10 +38,13 @@ def calc_weekly_paye(year, gross):
 
 
 def tests():
+    global g_tax_data
+
     def test_equal(val, expected):
         assert val == expected, val
 
-    load_tax_data(DEFAULT_TAX_FILE)
+    if g_tax_data is None:
+        g_tax_data = load_tax_data()
 
     test_equal(calc_weekly_usc(2016, 540), 16.105)
     test_equal(calc_weekly_usc(2019, 540), 7.335)
@@ -71,7 +61,7 @@ def tests():
 if __name__ == "__main__":
     from tabulate import tabulate
 
-    load_tax_data(DEFAULT_TAX_FILE)
+    g_tax_data = load_tax_data()
 
     hours = 39
     table = []
