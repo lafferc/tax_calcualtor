@@ -1,8 +1,9 @@
 import logging
+from decimal import *
 
 from utils import load_tax_data, calc_tax_from_bands
 
-g_tax_data = None
+g_tax_data = load_tax_data()
 
 def calc_weekly_income(year, hours):
     min_wage = g_tax_data[str(year)]["min_wage"]
@@ -43,25 +44,24 @@ def tests():
     def test_equal(val, expected):
         assert val == expected, val
 
-    if g_tax_data is None:
-        g_tax_data = load_tax_data()
+    def test_equal_3_pls(val, expected):
+        val = round(val, 3)
+        assert val == expected, val
 
-    test_equal(calc_weekly_usc(2016, 540), 16.105)
-    test_equal(calc_weekly_usc(2019, 540), 7.335)
-    test_equal(calc_weekly_usc(2019, 350), 3.535)
-    test_equal(calc_monthly_usc(2018, 1250), 9.985)
+    test_equal_3_pls(calc_weekly_usc(2016, 540), 16.105)
+    test_equal_3_pls(calc_weekly_usc(2019, 540), 11.28)
+    test_equal_3_pls(calc_weekly_usc(2019, 350), 3.535)
+    test_equal_3_pls(calc_monthly_usc(2018, 1250), 9.985)
     test_equal(calc_weekly_income(2018, 30), (2018, 286.5, 2.265, 226.935))
-    test_equal(calc_usc(1, 2017, 12000), 0)
-    test_equal(calc_usc(1, 2018, 15000), 119.82)
-    test_equal(calc_usc(1, 2018, 45000), 1094.26)
-    test_equal(calc_usc(12, 2018, 1250), 9.985)
-    test_equal(calc_usc(52, 2018, 290), 2.335)
+    test_equal_3_pls(calc_usc(1, 2017, 12000), 0)
+    test_equal_3_pls(calc_usc(1, 2018, 15000), 119.82)
+    test_equal_3_pls(calc_usc(1, 2018, 45000), 1424.59)
+    test_equal_3_pls(calc_usc(12, 2018, 1250), 9.985)
+    test_equal_3_pls(calc_usc(52, 2018, 290), 2.335)
 
 
 if __name__ == "__main__":
     from tabulate import tabulate
-
-    g_tax_data = load_tax_data()
 
     hours = 39
     table = []
