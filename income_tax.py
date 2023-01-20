@@ -1,29 +1,27 @@
-from utils import calc_tax_from_bands
+from utils import load_tax_data, calc_tax_from_bands
 
-paye_bands = [
-        (34550, 0.2),
-        (None, 0.4)]
-usc_bands = [
-        (12012, 0.005),
-        (19372, 0.02),
-        (70044, 0.0475),
-        (None, 0.08)]
-prsi_bands = [
-        (None, 0.04)]
+g_tax_data = load_tax_data()
+current_year = "2018"
 
 
 class Employee(object):
     tax_calculated = False
-    def __init__(self, income, contribution, tax_credits=3300):
+    def __init__(self, income, contribution, tax_info):
         self.anual_income = income
         self.pension = contribution * 12
-        self.tax_credits = tax_credits
+        self.tax_info = tax_info
+        self.tax_credits = self.tax_info["paye"]["tax_credit"]["employee"] 
+        self.tax_credits += self.tax_info["paye"]["tax_credit"]["single"] 
 
     def calc_tax_bill(self):
+        paye_bands = self.tax_info["paye"]["bands"]
         self.paye = calc_tax_from_bands(self.anual_income - self.pension, paye_bands)
         self.paye -= self.tax_credits
 
+        usc_bands = self.tax_info["usc"]["bands"]
         self.usc = calc_tax_from_bands(self.anual_income, usc_bands)
+
+        prsi_bands = self.tax_info["prsi"]["bands"]
         self.prsi = calc_tax_from_bands(self.anual_income, prsi_bands)
 
         self.tax_calculated = True
@@ -42,6 +40,27 @@ class Employee(object):
         return "paye:%.2f , usc:%.2f, prsi:%.2f" % (self.paye, self.usc, self.prsi)
 
 
+def tests():
+    def test_equal(val, expected, places=None):
+        if places is not None:
+            val = round(val, places)
+        assert val == expected, val
+
+    tax_info = g_tax_data["2018"]
+
+    e = Employee(25000, 0, tax_info)
+    test_equal(e.net_monthly_income(), 1818.78, 2)
+
+    e = Employee(50000, 0, tax_info)
+    test_equal(e.net_monthly_income(), 3045.66, 2)
+
+    e = Employee(75000, 0, tax_info)
+    test_equal(e.net_monthly_income(), 4099.94, 2)
+
+    e = Employee(100000, 0, tax_info)
+    test_equal(e.net_monthly_income(), 5099.94, 2)
+
+
 if __name__ == '__main__':
     import argparse
     from tabulate import tabulate
@@ -55,9 +74,11 @@ if __name__ == '__main__':
     else:
         salaries = args.salary
 
+    monthly_pension = 0
+
     table = []
     for i in salaries:
-        e = Employee(i, 0)
+        e = Employee(i, monthly_pension, g_tax_data[current_year])
         m_income = e.net_monthly_income()
         tax = i/12 - m_income
         table.append((i, m_income, 100*tax/(i/12)))
@@ -65,5 +86,3 @@ if __name__ == '__main__':
     print(tabulate(table,
                    headers=["salary", "monthly wage", "effective tax rate"],
                    floatfmt=("", ".2f", ".2f")))
-
-

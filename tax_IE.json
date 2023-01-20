@@ -14,7 +14,12 @@
             "bands": [
                 [33800, 0.2],
                 [null, 0.4]
-            ]
+            ],
+            "tax_credit": {
+                "single": 1650,
+                "married": 3300,
+                "employee": 1650
+            }
         },
         "prsi": {
             "bands": [
@@ -37,7 +42,12 @@
             "bands": [
                 [33800, 0.2],
                 [null, 0.4]
-            ]
+            ],
+            "tax_credit": {
+                "single": 1650,
+                "married": 3300,
+                "employee": 1650
+            }
         },
         "prsi": {
             "bands": [
@@ -60,7 +70,12 @@
             "bands": [
                 [34550, 0.2],
                 [null, 0.4]
-            ]
+            ],
+            "tax_credit": {
+                "single": 1650,
+                "married": 3300,
+                "employee": 1650
+            }
         },
         "prsi": {
             "bands": [
@@ -83,7 +98,12 @@
             "bands": [
                 [35300, 0.2],
                 [null, 0.4]
-            ]
+            ],
+            "tax_credit": {
+                "single": 1650,
+                "married": 3300,
+                "employee": 1650
+            }
         },
         "prsi": {
             "bands": [
@@ -106,7 +126,12 @@
             "bands": [
                 [35300, 0.2],
                 [null, 0.4]
-            ]
+            ],
+            "tax_credit": {
+                "single": 1650,
+                "married": 3300,
+                "employee": 1650
+            }
         },
         "prsi": {
             "bands": [
@@ -129,7 +154,12 @@
             "bands": [
                 [35300, 0.2],
                 [null, 0.4]
-            ]
+            ],
+            "tax_credit": {
+                "single": 1650,
+                "married": 3300,
+                "employee": 1650
+            }
         },
         "prsi": {
             "bands": [
@@ -139,7 +169,6 @@
     },
     "2022": {
         "min_wage": 10.50,
-        "tax_credit": 1700,
         "usc": {
             "exempt": 13000,
             "bands": [
@@ -153,7 +182,12 @@
             "bands": [
                 [36800, 0.2],
                 [null, 0.4]
-            ]
+            ],
+            "tax_credit": {
+                "single": 1700,
+                "married": 3400,
+                "employee": 1700
+            }
         },
         "prsi": {
             "bands": [
@@ -163,8 +197,6 @@
     },
     "2023": {
         "min_wage": 11.30,
-        "tax_credit": 1775,
-        "rent_tax_credit": 500,
         "usc": {
             "exempt": 13000,
             "bands": [
@@ -178,7 +210,13 @@
             "bands": [
                 [40000, 0.2],
                 [null, 0.4]
-            ]
+            ],
+            "tax_credit": {
+                "single": 1775,
+                "married": 3550,
+                "employee": 1775,
+                "renter": 500
+            }
         },
         "prsi": {
             "bands": [
