@@ -1,7 +1,6 @@
 from utils import load_tax_data, calc_tax_from_bands
 
 g_tax_data = load_tax_data()
-current_year = "2018"
 
 
 class Employee(object):
@@ -69,6 +68,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("salary", type=int, nargs="*")
     parser.add_argument("-t", "--test", action="store_true")
+    parser.add_argument("--year", type=int, help="tax year")
+    parser.add_argument("--pension", type=str, help="Monthly pension contribution as a number or a percentage", default=0)
     args = parser.parse_args()
 
     if args.test:
@@ -80,11 +81,18 @@ if __name__ == '__main__':
     else:
         salaries = args.salary
 
-    monthly_pension = 0
+
+    if '%' not in args.pension:
+        monthly_pension = float(args.pension)
+    tax_year = str(args.year or 2022)
+
 
     table = []
     for i in salaries:
-        e = Employee(i, monthly_pension, g_tax_data[current_year])
+        if "%" in args.pension:
+            monthly_pension = (i/12) * float(args.pension.split('%')[0])/100
+
+        e = Employee(i, monthly_pension, g_tax_data[tax_year])
         m_income = e.net_monthly_income()
         tax = i/12 - m_income
         table.append((i, m_income, 100*tax/(i/12)))
