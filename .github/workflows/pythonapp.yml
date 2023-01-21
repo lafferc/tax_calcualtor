@@ -22,5 +22,8 @@ jobs:
     - name: Test usc_changes.py
       run: |
           python -c "from usc_changes import tests; tests()"
+    - name: Test income_tax.py
+      run: |
+          python income_tax.py --test
 
 

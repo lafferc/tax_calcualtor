@@ -10,8 +10,8 @@ class Employee(object):
         self.anual_income = income
         self.pension = contribution * 12
         self.tax_info = tax_info
-        self.tax_credits = self.tax_info["paye"]["tax_credit"]["employee"] 
-        self.tax_credits += self.tax_info["paye"]["tax_credit"]["single"] 
+        self.tax_credits = self.tax_info["paye"]["tax_credit"]["employee"]
+        self.tax_credits += self.tax_info["paye"]["tax_credit"]["single"]
 
     def calc_tax_bill(self):
         paye_bands = self.tax_info["paye"]["bands"]
@@ -63,11 +63,17 @@ def tests():
 
 if __name__ == '__main__':
     import argparse
+    import sys
     from tabulate import tabulate
 
     parser = argparse.ArgumentParser()
     parser.add_argument("salary", type=int, nargs="*")
+    parser.add_argument("-t", "--test", action="store_true")
     args = parser.parse_args()
+
+    if args.test:
+        tests()
+        sys.exit()
 
     if not len(args.salary):
         salaries = [25000, 50000, 75000, 100000]
