@@ -69,7 +69,7 @@ if __name__ == '__main__':
     parser.add_argument("salary", type=int, nargs="*")
     parser.add_argument("-t", "--test", action="store_true")
     parser.add_argument("--year", type=int, help="tax year")
-    parser.add_argument("--pension", type=str, help="Monthly pension contribution as a number or a percentage", default=0)
+    parser.add_argument("--pension", type=str, help="Monthly pension contribution as a number or a percentage", default="0")
     args = parser.parse_args()
 
     if args.test:
